@@ -2,11 +2,15 @@ import express from "express";
 import ConfigViewEngine from "./config/viewEngine";
 import initWebRoute from "./routers/web";
 import bodyParser from "body-parser";
+import connection from "./config/connectDB";
 
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Connect to the database
+connection();
 
 // config view engine
 ConfigViewEngine(app);
