@@ -1,5 +1,5 @@
 import express from "express";
-import ConfigViewEngine from "./configs/viewEngine";
+import ConfigViewEngine from "./config/viewEngine";
 import initWebRoute from "./routers/web";
 import bodyParser from "body-parser";
 
