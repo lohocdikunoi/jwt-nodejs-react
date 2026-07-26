@@ -1,13 +1,8 @@
 import bcrypt from "bcryptjs";
 import mysql from "mysql2/promise";
+import db from "../models/index.js";
 
 const salt = bcrypt.genSaltSync(10);
-
-// const connection = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   database: "jwt",
-// });
 
 const hashPassword = (password) => {
   return bcrypt.hashSync(password, salt);
@@ -16,64 +11,62 @@ const hashPassword = (password) => {
 const handleCreateUser = async (email, password, username) => {
   let hash = hashPassword(password);
 
-  const connection = await mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "jwt",
+  await db.User.create({
+    email: email,
+    password: hash,
+    username: username,
   });
-
-  await connection.execute(
-    "INSERT INTO users (email, password, username) VALUES (?, ?, ?)",
-    [email, hash, username],
-  );
 };
 
 const getUserList = async () => {
-  const connection = await mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "jwt",
+  let users = await db.User.findAll({
+    where: { id: 1 },
+    include: { model: db.Group, attributes: ["id", "name", "description"] },
+    attributes: ["id", "email", "username"],
+    raw: true,
+    nest: true,
   });
 
-  const [rows, fields] = await connection.execute("SELECT * FROM users");
-  return rows;
+  let roles = await db.Group.findAll({
+    where: { id: 1 },
+    include: { model: db.Role, attributes: ["id", "url", "description"] },
+    attributes: ["id", "name", "description"],
+    raw: true,
+    nest: true,
+  });
+
+  console.log(">>> check user list: ", users);
+  console.log(">>> check roles: ", roles);
+
+  return await db.User.findAll();
 };
 
 const deleteUser = async (id) => {
-  const connection = await mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "jwt",
+  await db.User.destroy({
+    where: {
+      id: id,
+    },
   });
-
-  await connection.execute("DELETE FROM users WHERE id = ?", [id]);
 };
 
 const getUserById = async (id) => {
-  const connection = await mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "jwt",
+  let user = {};
+  user = await db.User.findOne({
+    where: {
+      id: id,
+    },
   });
-
-  const [rows, fields] = await connection.execute(
-    "SELECT * FROM users WHERE id = ?",
-    [id],
-  );
-
-  return rows;
+  return user;
 };
 
 const UpdateUser = async (id, email, username) => {
-  const connection = await mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "jwt",
-  });
-
-  await connection.execute(
-    "UPDATE users SET email = ?, username = ? WHERE id = ?",
-    [email, username, id],
+  await db.User.update(
+    { email: email, username: username },
+    {
+      where: {
+        id: id,
+      },
+    },
   );
 };
 
