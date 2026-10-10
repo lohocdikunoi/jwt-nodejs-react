@@ -2,6 +2,10 @@ import express from "express";
 import apiController from "../controller/apiController";
 import usersController from "../controller/usersController";
 import groupsController from "../controller/groupsController";
+import {
+  checkUserJwtWithCookie,
+  checkUserPermission,
+} from "../middleware/JWTAction";
 
 const router = express.Router();
 
@@ -11,11 +15,13 @@ const router = express.Router();
  * @returns
  */
 const initApiRoute = (app) => {
-  router.get("/test", apiController.TestApi);
+  router.all("*", checkUserJwtWithCookie, checkUserPermission);
 
   // auth routes
   router.post("/register", apiController.HandleRegister);
   router.post("/login", apiController.HandleLogin);
+  // account route
+  router.get("/account", usersController.getUserAccount);
 
   // users routes
   router.get("/users/read", usersController.readFunc);

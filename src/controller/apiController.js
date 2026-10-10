@@ -1,12 +1,5 @@
 import LoginRegisterService from "../service/LoginRegisterService";
 
-const TestApi = (req, res) => {
-  return res.status(200).json({
-    message: "ok",
-    data: "test API",
-  });
-};
-
 const HandleRegister = async (req, res) => {
   try {
     if (
@@ -45,9 +38,13 @@ const HandleRegister = async (req, res) => {
 const HandleLogin = async (req, res) => {
   try {
     let data = await LoginRegisterService.HandleLogin(req.body);
+    if (data && data.DT && data.DT.access_token) {
+      res.cookie("jwt", data.DT.access_token, { httpOnly: true });
+    }
     return res.status(200).json({
       EM: data.EM,
       EC: data.EC,
+      DT: data.DT,
     });
   } catch (error) {
     console.log("Error from HandleLogin: ", error);
@@ -59,7 +56,6 @@ const HandleLogin = async (req, res) => {
 };
 
 module.exports = {
-  TestApi,
   HandleLogin,
   HandleRegister,
 };
