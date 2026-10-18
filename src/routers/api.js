@@ -2,6 +2,7 @@ import express from "express";
 import apiController from "../controller/apiController";
 import usersController from "../controller/usersController";
 import groupsController from "../controller/groupsController";
+import roleController from "../controller/roleController";
 import {
   checkUserJwtWithCookie,
   checkUserPermission,
@@ -20,8 +21,17 @@ const initApiRoute = (app) => {
   // auth routes
   router.post("/register", apiController.HandleRegister);
   router.post("/login", apiController.HandleLogin);
+  router.post("/logout", apiController.HandleLogout);
   // account route
   router.get("/account", usersController.getUserAccount);
+
+  //role route
+  router.get("/roles/read", roleController.readFunc);
+  router.post("/roles/create", roleController.createFunc);
+  router.put("roles/update", roleController.updateFunc);
+  router.delete("/roles/delete", roleController.deleteFunc);
+  router.get("/roles/by-groups/:groupsId", roleController.getRoleByGroup);
+  router.post("/roles/assignRoleToGroup", roleController.assignRoleToGroup);
 
   // users routes
   router.get("/users/read", usersController.readFunc);

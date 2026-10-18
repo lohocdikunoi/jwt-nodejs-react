@@ -21,7 +21,7 @@ const Cors = (app) => {
     res.setHeader("Access-Control-Allow-Credentials", true);
 
     if (req.method === "OPTIONS") {
-      res.sendStatus(200);
+      return res.sendStatus(200);
     }
 
     // Pass to next layer of middleware

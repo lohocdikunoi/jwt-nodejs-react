@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 require("dotenv").config();
 
-const nonSecurePaths = ["/register", "/login"];
+const nonSecurePaths = ["/register", "/login", "/logout"];
 
 const extractTokenFromHeader = (req) => {
   if (
@@ -75,7 +75,9 @@ const checkUserPermission = (req, res, next) => {
       EM: "Insufficient permissions",
     });
   }
-  let canAccess = role.some((item) => item.url === currentPath);
+  let canAccess = role.some(
+    (item) => item.url === currentPath || currentPath.includes(item.url),
+  );
   if (canAccess) {
     return next();
   } else {

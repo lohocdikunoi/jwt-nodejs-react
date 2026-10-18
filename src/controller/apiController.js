@@ -55,7 +55,24 @@ const HandleLogin = async (req, res) => {
   }
 };
 
+const HandleLogout = async (req, res) => {
+  try {
+    res.clearCookie("jwt");
+    return res.status(200).json({
+      EM: "User logged out successfully",
+      EC: "0",
+    });
+  } catch (error) {
+    console.log("Error from HandleLogout: ", error);
+    return res.status(500).json({
+      EM: "Error occurred while logging out user",
+      EC: "-1",
+    });
+  }
+};
+
 module.exports = {
   HandleLogin,
   HandleRegister,
+  HandleLogout,
 };
